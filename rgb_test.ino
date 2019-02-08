@@ -1,4 +1,4 @@
-// Quick RGB screen test for matrix connection verification.
+// The "all white" test
 
 #include <Adafruit_GFX.h>   // Core graphics library
 #include <RGBmatrixPanel.h> // Hardware-specific library
@@ -25,28 +25,7 @@
 // Note "false" for double-buffering to consume less memory, or "true" for double-buffered.
 RGBmatrixPanel matrix(A, B, C,  D,  CLK, LAT, OE, false);
 
-// Color pallete for spectrum...cooler than just single green.
-uint16_t spectrum_colors[] = 
-{
-  matrix.Color444(7,0,0),   // index 0
-  matrix.Color444(6,1,0),   // index 1
-  matrix.Color444(5,2,0),   // index 2
-  matrix.Color444(4,3,0),   // index 3
-  matrix.Color444(3,4,0),   // index 4
-  matrix.Color444(2,5,0),   // index 5
-  matrix.Color444(1,6,0),   // index 6
-  matrix.Color444(0,7,0),   // index 7 
-  matrix.Color444(0,6,1),   // index 8
-  matrix.Color444(0,5,2),   // index 9
-  matrix.Color444(0,4,3),   // index 10
-  matrix.Color444(0,3,4),   // index 11
-  matrix.Color444(0,2,5),   // index 12 
-  matrix.Color444(0,1,6),   // index 13
-  matrix.Color444(0,0,6),   // index 14
-  matrix.Color444(0,0,10)    // index 15 
-};
-
-
+#define BRIGHTNESS_PIN A5
 
 void setup() 
 {
@@ -54,14 +33,20 @@ void setup()
   
   matrix.begin();
 
-  for (i=0; i < 16; i++)
-  {
-    matrix.fillRect(i*2,0,2,31,spectrum_colors[i]);
-  }
-  
 }
 
 void loop() 
 {
+  int pin_read;
+  uint16_t brightness;
 
+  // this will give us 0-1023
+  pin_read = analogRead(BRIGHTNESS_PIN);
+
+  // map this to 0-7
+  brightness = map(pin_read,0,1023,0,7);
+
+  //  ...and set the screen
+  matrix.fillScreen(matrix.Color333(brightness,brightness,brightness));
+  
 }
